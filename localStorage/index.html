@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<!--
+  Google HTML5 slide template
+
+  Authors: Luke Mahé (code)
+           Marcin Wichary (code and design)
+
+           Dominic Mazzoni (browser compatibility)
+           Charles Chen (ChromeVox support)
+
+  URL: http://code.google.com/p/html5slides/
+-->
+
+<html>
+  <head>
+    <title>localStorage vs cookies</title>
+
+    <meta charset='utf-8'>
+    <script src='slides/slides.js'></script>
+  </head>
+
+  <style>
+	.slides.template-wikia > article:not(.nobackground):not(.biglogo) {
+		background: url(images/wikia-logo.png) 710px 625px no-repeat;
+		background-color: white;
+	}
+
+	.slides.template-wikia > article > h3 {
+		color: #0069AC;
+	}
+
+	.slides.template-wikia strong {
+		color: #0069AC;
+	}
+
+	.slides.template-wikia th {
+		background-color: #f1f1f1;
+	}
+  </style>
+
+  <body style='display: none'>
+
+    <section class='slides layout-regular template-wikia'>
+
+      <!-- Your slides (<article>s) go here. Delete or comment out the
+           slides below. -->
+
+      <article>
+        <h1>
+		  <br>
+          Ciasteczkowy potwór<br>kontra magazynier
+          <br>
+          <small>albo <i>cookies vs localStorage</i></small>
+        </h1>
+        <p>
+          Maciej Brencz, Wikia Inc.
+          <br>
+          <a href="#">macbre@wikia-inc.com</a>
+          <br>
+          23 lutego 2012
+        </p>
+
+		<p>
+          <img src='images/CookieMonster-Sitting.jpg' style="position:absolute;left:0;top:0;height:40%">
+
+          <img src='images/HTML5_1Color_Black.png' style="position:absolute;left:40%;top:0;height:40%;opacity:0.7">
+          <img src='images/HTML5_Offline_Storage_512.png' style="position:absolute;left:70%;top:0;height:40%;opacity:0.7">
+        </p>
+
+		<div class="source">
+			<a href="http://muppet.wikia.com/wiki/File:CookieMonster-Sitting.jpg">http://muppet.wikia.com/wiki/File:CookieMonster-Sitting.jpg</a>
+		</div>
+
+      </article>
+
+      <article>
+		<h3>
+			Rys historyczny
+		</h3>
+        <ul class="build">
+			<li><strong>1994</strong> - Mosaic Netscape v0.9beta (pierwsza przeglądarka z obsługą ciastek)</li>
+			<li><strong>1995</strong> - Internet Explorer 2.0 wspiera ciasteczka</li>
+			<li><strong>1996</strong> - <i>Financial Times</i> porusza kwestie prywatności i ciasteczek</li>
+			<li><strong>1997</strong> - ukazuje się specyfikacja ciasteczek (RFC 2109)</li>
+			<li><strong>1998</strong> - ciasteczka zostają opatentowane</li>
+			<li><strong>2002</strong> - opcja <tt>HttpOnly</tt> (dodana do specyfikacji w 2011 r.).</li>
+		</ul>
+      </article>
+
+      <article>
+        <h3>
+          Ciasteczka - z czym to się je?
+        </h3>
+        <ul class="build">
+			<li>fragment zapytania i odpowiedzi HTTP</li>
+			<li>dostęp po stronie serwera</li>
+			<li>jak i przeglądarki klienta</li>
+			<li>możliwość określenia domen, które mogą odczytać ciastko</li>
+			<li>określony czas "życia" (TTL)</li>
+			<li>opcja <tt>HttpOnly</tt></li>
+			<li>rozmiar ograniczony do ok. 4 kB.</li>
+		</ul>
+		<div class="source">
+			<a href="http://en.wikipedia.org/wiki/HTTP_cookie#Implementation">http://en.wikipedia.org/wiki/HTTP_cookie#Implementation</a>
+		</div>
+      </article>
+
+	   <article>
+        <h3>
+          1997? Przecież to prehistoria!
+        </h3>
+        <p>
+          <img src='images/google-1998.jpg' style='height: 500px;' class='centered'>
+        </p>
+		<div class="source">
+			<a href="http://web.archive.org/web/19981111183552/http://google.stanford.edu/">http://web.archive.org/</a>
+		</div>
+      </article>
+
+	  <article>
+        <h3>
+          localStorage
+        </h3>
+        <ul class="build">
+			<li><strong>1999</strong> - Internet Explorer 5 wspierający <tt>userData</tt> - 640 kB (skąd ja to znam? ;)</li>
+			<li><strong>2006</strong> - Firefox  2.0 wspiera <tt>localStorage</tt> (jeszcze nieoficjalnie)</li>
+			<li><strong>2011</strong> - w specyfikacji W3C Web Storage (część HTML5)</li>
+			<li>wspierany przez Chrome 4+, Firefoxa 2+, IE8+, Opera 10.50+, Safari 4+</li>
+			<li>dostępny <strong>tylko</strong> w przeglądarce</li>
+			<li>do 5 MB na dane klucz - wartość (typu <tt>string</tt>)</li>
+			<li>permanentna pamięć (brak definicji TTL).</li>
+		</ul>
+		<div class="source">
+			<a href="http://dev.w3.org/html5/webstorage/">http://dev.w3.org/html5/webstorage/</a>
+		</div>
+      </article>
+
+	  <article>
+        <h3>
+          Przykłady użycia localStorage
+        </h3>
+        <ul class="build">
+			<li>pamiętanie stanu aplikacji internetowej na wypadek zawieszenia się przeglądarki</li>
+			<li>cache dla danych aplikacji</li>
+			<li>pamięć dla ustawień użytkownika</li>
+			<li>wydajniejsze śledzenie aktywności użytkownika</li>
+			<li>zamiennik cache'a przeglądarki (aplikacje / strony mobilne).</li>
+		</ul>
+		<div class="source">
+			<a href="http://dev.w3.org/html5/webstorage/">http://dev.w3.org/html5/webstorage/</a>
+		</div>
+      </article>
+
+	  <article>
+        <h3>
+          Ciasteczkowy potwór kontra magazynier
+        </h3>
+        <table>
+          <tr>
+			<th width="30%">
+			   Cecha
+            <th width="35%">
+              Ciastka
+            <th width="35%">
+              localStorage
+          <tr>
+			<td>
+			  <strong>Dostęp</strong>
+            <td>
+              Serwer / klient
+            <td>
+              Tylko klient
+          <tr>
+			<td>
+			  <strong>Rozmiar</strong>
+            <td>
+              do 4 kB
+            <td>
+              do 5 MB
+          <tr>
+			<td>
+			  <strong>Czas życia</strong>
+            <td>
+              Sesja / określony przez TTL
+            <td>
+              "Wieczny" :)
+          <tr>
+			<td>
+			  <strong>Polityka domenowa</strong>
+            <td>
+              Możliwość użycia: *.google.com
+            <td>
+              Ścisła
+          <tr>
+			<td>
+			  <strong>JavaScript</strong>
+            <td>
+              <tt>document.cookie</tt>
+            <td>
+              <tt>window.localStorage</tt>
+        </table>
+      </article>
+
+	  <article>
+        <h3>
+          localStorage i jQuery
+        </h3>
+        <ul class="build">
+			<li><tt>$.storage = new $.store()</tt> - inicjalizacja wtyczki</li>
+			<li><tt>$.storage.set('foo', {bar: true})</tt> - zapisanie klucza</li>
+			<li><tt>$.storage.get('foo')</tt> - odczyt klucza</li>
+			<li><tt>$.storage.del('foo')</tt> - usuwa klucz</li>
+			<li><tt>$.storage.flush()</tt> - usuwa wszystkie klucze domeny</li>
+			<li>wtyczka zapewnia serializację danych do JSON'a / XML'a</li>
+			<li>korzysta z <tt>userData</tt> w Internet Explorer 7.</li>
+		</ul>
+		<div class="source">
+			<a href="https://github.com/medialize/jQuery-store/blob/master/jquery.store.js">github.com - jQuery-store</a>
+		</div>
+      </article>
+
+      <article class="fill">
+      	<h3>
+          Odpluskwianie na przykładzie Chrome'a
+        </h3>
+
+		<p>
+          <img src='images/debug-cookies.png' style="min-height: 60%;left:-5%; top:20%">
+        </p>
+
+      </article>
+
+      <article class="fill">
+      	<h3>
+          Odpluskwianie na przykładzie Chrome'a
+        </h3>
+
+		<p>
+          <img src='images/debug-localStorage.png' style="min-height: 60%;left:-5%; top:20%">
+        </p>
+
+      </article>
+
+      <article>
+      	<h3>
+          Czyli mam zamienić ciasteczka na localStorage, tak?
+        </h3>
+
+		<h1>Nie do końca</h1>
+
+		<p>
+          <img src='images/delete-all-cookies.jpg' style="position:absolute;right:50px;top:25%;height:50%">
+        </p>
+
+      </article>
+
+      <article>
+		<h1 style="margin-top: 50px">Pytania?</h1>
+
+		<p>
+          <img src='images/cookie-glasses.gif' style="position:absolute;right:50px;top:25%;height:50%">
+          <img src='images/qr.png' style="position:absolute;left:50px;top:40%;height:50%">
+        </p>
+
+        <div class="source">
+        	<a href="http://slides.wikia.net/akai/20111130/localStorage">http://slides.wikia.net/akai/20111130/localStorage</a>
+        </div>
+
+      </article>
+    </section>
+
+  </body>
+</html>

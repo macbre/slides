@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+
+<!--
+  Google HTML5 slide template
+
+  Authors: Luke Mahé (code)
+           Marcin Wichary (code and design)
+
+           Dominic Mazzoni (browser compatibility)
+           Charles Chen (ChromeVox support)
+
+  URL: http://code.google.com/p/html5slides/
+-->
+
+<html>
+  <head>
+    <title>JavaScript - niebezpieczne rewiry</title>
+
+    <meta charset='utf-8'>
+    <script src='slides/slides.js'></script>
+  </head>
+
+  <style>
+	.slides.template-wikia > article:not(.nobackground):not(.biglogo) {
+		background: url(images/wikia-logo.png) 710px 625px no-repeat;
+		background-color: white;
+	}
+
+	.slides.template-wikia > article > h3 {
+		color: #0069AC;
+	}
+
+	.slides.template-wikia strong {
+		color: #0069AC;
+	}
+
+	.slides.template-wikia th {
+		background-color: #f1f1f1;
+	}
+
+	.slides.template-wikia > article pre {
+		margin: 30px 0;
+	}
+
+	.slides.template-wikia > article code {
+		font-family: courier;
+		display: block;
+		letter-spacing: -1px;
+	}
+
+	.slides.template-wikia > article code:first-letter {
+		color:  #0069AC;
+		font-weight: bold;
+	}
+  </style>
+
+  <body style='display: none'>
+
+    <section class='slides layout-regular template-wikia'>
+
+      <!-- Your slides (<article>s) go here. Delete or comment out the
+           slides below. -->
+
+      <article class="fill">
+        <h1 style="margin-top: 10px"><big><strong>JavaScript</strong></big><br>niebezpieczne rewiry</h1>
+        <p style="margin-top: 375px; color: #0069AC">
+          Maciej Brencz, Wikia Inc.
+          <br>
+          AKAI, 10 stycznia 2012
+        </p>
+
+		<p>
+			<img src="images/_MG_5168.jpg" style="opacity: 0.6">
+		</p>
+
+		<div class="source">
+			<a href="http://picasaweb.google.com/maciej.brencz/KokoCraterBotanicalGarden#5655821059039360978">picasaweb.google.com/maciej.brencz/KokoCraterBotanicalGarden#5655821059039360978</a>
+		</div>
+
+      </article>
+
+	  <article class="fill">
+        <h3>
+			Z ostatniej chwili: IE6 (w końcu) pogrzebany przez Microsoft
+		</h3>
+
+		<p>
+			<img src="images/ie6_cake.jpg">
+		</p>
+
+		<div class="source">
+			<a href="http://windowsteamblog.com/ie/b/ie/archive/2012/01/03/the-us-says-goodbye-to-ie6.aspx">http://windowsteamblog.com/ie/b/ie/archive/2012/01/03/the-us-says-goodbye-to-ie6.aspx</a>
+		</div>
+
+      </article>
+
+	  <article>
+		<h3>
+			JavaScript - krótki wstęp do tematu
+		</h3>
+
+		<ul class="build">
+			<li>stworzony w roku 1995 na potrzeby przeglądarki Netscape Navigator 2 (<em>Mocha</em>),</li>
+			<li>najbardziej rozpowszechniony,</li>
+			<li>z jedną z najgorszych reputacji w tzw. "środowisku",</li>
+			<li>"trzon" języka (semantyka, podstawowe typy) określony przez standard ECMA,</li>
+			<li>DOM API, Local Storage API, Geolocation API i inne - standardy W3C,</li>
+			<li>to nie tylko jQuery i operacje na DOM'ie,</li>
+			<li>to nie tylko przeglądarka (node.js, Rhino, ...).</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			JavaScript, a inne języki
+		</h3>
+
+		<ul class="build">
+			<li>oparty składniowo na C,</li>
+			<li>nie jest to Java!</li>
+			<li>dynamiczny język programowania,</li>
+			<li>słabe typowanie zmiennych (Scheme),</li>
+			<li>funkcje anonimowe <em>lambda</em> (Scheme),</li>
+			<li>szybkie wyrażenia regularne (Perl),</li>
+			<li>brak klas, pól i metod prywatnych (możliwość emulacji),</li>
+			<li>dziedziczenie oparte o <tt>prototype</tt> (Self).</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			Scope, czyli o zasięgu zmiennych słów kilka
+		</h3>
+
+		<pre>
+var i = 5, foo = 'bar',
+bar = function() {
+  var i = 42;
+  ajax('/addToCart/cake', function(data) {
+    console.log(data.result);
+  });
+};</pre>
+
+		<ul class="build">
+			<li>zasięg wewnętrzny "widzi" zewnętrzne</li>
+			<li>globalny scope &rarr; problem jego<br>"zaśmiecania" (obiekt <tt>window</tt>)
+			<pre>
+var i = 42;
+(function() {
+  i = 'test'; // zmienna globalna :(
+})(); // "immediate function"
+console.log(i); // na pewno 42?</pre>
+			<img src='images/scope.png' style="position:absolute;right:-100px;bottom:-100px;height: 75%; z-index:2">
+			</li>
+		</ul>
+
+	  </article>
+
+	  <article>
+		<h3>
+			Scope, czyli o zasięgu zmiennych ciąg dalszy...
+		</h3>
+
+		<ul class="build">
+			<li>zasięg funkcyjny, a nie blokowy &rarr; <em>var hoisting</em>
+			<pre>
+var x = 5;
+(function () {
+  console.log(x); // na pewno 5?
+  var x = 42;
+})();</pre></li>
+			<li>powyższy kod to:</em>
+			<pre>
+var x = 5;
+(function () {
+  var x;
+  console.log(x); // undefined
+  x = 42;
+})();</pre></li>
+		</ul>
+
+	  </article>
+
+	  <article>
+		<h3>
+			Referencje
+		</h3>
+
+		<ul class="build">
+			<li>zmienne typów "nieprostych" przekazywane jako <strong>referencje</strong>
+			<pre>
+var a, b;
+a = b = {foo: true}; // a i b odnoszą się do tego samego obiektu!
+a.foo = false;
+console.log(b.foo); // też false</pre>
+			</li>
+			<li>przekazywanie parametrów funkcji jako referencje
+			<pre>
+var a = {foo:true};
+(function(obj) {
+  obj.foo = false;
+})(a);
+console.log(a.foo); // false</pre>
+			</li>
+	  </article>
+
+	  <article>
+		<h3>
+			Być obiektem czy tablicą, oto jest pytanie...
+		</h3>
+
+		<ul class="build">
+			<li>dane z indeksem numerycznym? &rarr; <strong>używajmy tablicy</strong></li>
+			<li><pre>
+var a = [1,2];
+a[100] = 3;
+console.log(a.length); // 3? nie, 101</pre></li>
+			<li>pomocnicze metody: <tt>push</tt> i <tt>pop</tt>,</li>
+			<li><pre>
+var a = [1,2,3,4];
+a.length = 2;
+console.log(a); // [1,2] - "obcięcie" tablicy</pre></li>
+			<li>tworzenie tablic i obiektów - <em>literale</em> <tt>[]</tt> i <tt>{}</tt>,<br>szybsze niż konstruktory <tt>new Array()</tt> i <tt>new Object().</tt></li>
+		</ul>
+	  </article>
+	  <article>
+		<h3>
+			Operator ==, a ===
+		</h3>
+
+		<ul class="build">
+			<li>wartości <em>falsy</em>: <tt>""</tt>, <tt>0</tt>, <tt>false</tt>, <tt>undefined</tt>, <tt>null</tt>, <tt>NaN</tt></li>
+			<li>operator <tt>==</tt> <strong>rzutuje zmienne</strong>:</li>
+			<li>
+				<code>&gt; 0 == ''</code>
+				true
+			</li>
+			<li>
+				<code>&gt; 0 == false</code>
+				true
+			</li>
+
+			<li>operator <tt>===</tt> porównuje również <strong>typy zmiennych</strong>:</li>
+			<li>
+				<code>&gt; (0 === '') || (0 === false)</code>
+				false
+			</li>
+
+			<li>porównywanie obiektów:</li>
+			<li>
+				<code>&gt; ({foo: true}) === ({foo: true})</code>
+				false
+			</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			<tt>eval</tt> is evil i słów kilka o <tt>with</tt>
+		</h3>
+
+		<ul class="build">
+			<li><tt>eval</tt> daje możliwość uruchomienia podanego kodu,</li>
+			<li><strong>wolny</strong>, potencjalna "dziura" w kodzie,</li>
+			<li><tt>eval('({"foo":42})');</tt> <em>73 ms / 1000 iteracji</em></li>
+			<li><tt>JSON.parse('{"foo":42}');</tt> <em>2 ms / 1000 iteracji</em></li>
+
+			<li><tt>with</tt> - "zmiana" scope'a na podany obiekt
+			<pre>
+var x = 42;
+with(obj) {
+	x = 5; // przypisanie do x czy do obj.x?
+}</pre>
+			</li>
+
+			<li>użycie obu zabronione w trybie <em>strict</em> ECMAScript5</li>
+		</ul>
+
+		<img src='images/devil.jpg' style="position:absolute;left:50px;bottom:0">
+	  </article>
+
+	  <article>
+		<h3>
+			O jeden przecinek za daleko (IE7 i IE8)
+		</h3>
+
+		<pre>
+var foo = {
+  test: true,
+  bar: 32,
+};</pre>
+
+		<img src="images/ieDevtools.png" style="height: 50%">
+
+		<ul class="build">
+			<li><img src='images/tcd.png' style="position:absolute;right:50px;top:25%"></li>
+		</ul>
+
+		<div class="source">
+			<a href="http://www.enterprisedojo.com/2010/12/19/beware-the-trailing-comma-of-death/">www.enterprisedojo.com/2010/12/19/beware-the-trailing-comma-of-death/</a>
+		</div>
+	  </article>
+
+	  <article>
+		<h3>
+			Kwestia średnika
+		</h3>
+
+		<pre>
+function getObject() {
+  return
+  {
+    foo: 42
+  }
+}
+
+getObject(); // powinniśmy otrzymać obiekt, ale czy na pewno?</pre>
+
+		<ul class="build">
+			<li>interpreter JS kończy każdą linię kodu średnikiem,</li>
+			<li><tt>return undefined;</tt></li>
+			<li>zminifikowany kod daje inne<br>wyniki niż kod wyjściowy!
+				<img src="images/nelson.gif" style="position:absolute; bottom:0;right:0;height:40%">
+			</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			JSLint na ratunek
+		</h3>
+
+		<p>Wskazuje najczęstsze błędy w kodzie JS:</p>
+
+		<ul class="build">
+			<li>użycie <tt>eval</tt> oraz <tt>with</tt>,</li>
+			<li>przypisanie do zmiennej z globalnego scope'a w funkcji,</li>
+			<li>brakujące średniki na końcach linii,</li>
+			<li>brakujące breaki w case'ach switchy,</li>
+			<li>niezamknięte w <tt>{}</tt> bloki kodu (np. <tt>if</tt>, <tt>for</tt>, <tt>while</tt>),</li>
+			<li><tt>return</tt> w środku bloku (tak, to się zdarza ;)<br><br></tt>
+			<li>nie traktujmy wskazówek pana Crockforda jak wyroczni,</li>
+			<li>mniej restrykcyjne forki: <a href="http://www.jshint.com/">JSHint</a> / <a href="https://github.com/jshint/jshint/">@github</a>.</li>
+		</ul>
+
+		<div class="source">
+			<a href="http://www.jslint.com/">www.jslint.com</a> / <a href="https://github.com/douglascrockford/JSLint">@github</a>
+		</div>
+	  </article>
+
+	  <article>
+		<h3>
+			JSLint w Wikii
+		</h3>
+
+		<ul class="build">
+			<li>ponad 370 sprawdzanych plików JS (łącznie 1762 - wtyczki jQuery, CKEditor, MediaWiki, ...),</li>
+			<li>codzienny raport z JSLinta (generowany w node.js) w&nbsp;postaci pliku HTML,</li>
+			<li>skrypt PHP'owy do sprawdzania wybranych katalogów (w&nbsp;czasie tworzenia projektu).</li>
+			<li>
+				<img src="images/jslint.png" style="position:absolute;top:55%;left:0;width:100%">
+			</li>
+		</ul>
+	  </article>
+
+      <article class="fill">
+		<h3>
+			Pułapki, czyli o czym szczególnie warto pamiętać
+		</h3>
+        <ul class="build" style="color: #000">
+			<li>
+				<code>&gt; typeof null</code>
+				'object'
+			</li>
+			<li>
+				<code>&gt; 2 + '2'</code>
+				"22"
+			</li>
+			<li>
+				<code>&gt; 0.1 + 0.2</code>
+				0.30000000000000004
+			</li>
+			<li>
+				<code>&gt; parseInt('08')</code>
+				0 &rarr; <em>8 wg ECMAScript5</em>
+			</li>
+			<li>
+				<code>&gt; typeof [1, 2, 3]</code>
+				"object"
+			</li>
+			<li>
+				<code>&gt; undefined = 'foo'</code>
+				<strong>nie róbcie tego w domu!</strong>
+			</li>
+		</ul>
+
+		<p>
+			<img src="images/IMG_2057.jpg" style="opacity: 0.4">
+		</p>
+
+		<div class="source">
+			<a href="http://picasaweb.google.com/maciej.brencz/SF2010#5507312907791761826">picasaweb.google.com/maciej.brencz/SF2010#5507312907791761826</a>
+		</div>
+      </article>
+
+	  <article>
+		<h3>
+			The Good Parts, czyli nie taki diabeł straszny...
+		</h3>
+
+		<ul class="build">
+			<li>dynamiczność języka &rarr; <em>poly-filling</em>:</li>
+			<li><code>&gt; String.prototype.trim</code></li>
+			<li><code>&gt; Array.prototype.indexOf</code></li>
+
+			<li>operator <tt>||</tt></li>
+			<li><code>&gt; options = options || {}</code></li>
+
+			<li>format JSON wywodzi się z obiektowej notacji w JS'ie,</li>
+			<li>funkcje anonimowe (<em>lambda</em>),</li>
+			<li>brak instrukcji <tt>goto</tt> :)</li>
+			<li>asynchroniczna "filozofia".</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			<tt>"use strict"</tt>
+		</h3>
+
+		<ul class="build">
+			<li>część ECMAScript 5 - Fx 4.0+, Chrome 13.0+, Safari 5.1+ (pojawi się w IE 10.0 oraz Opera 12)</li>
+			<li>wprowadza interpreter JS w bardziej rygorystyczny tryb,</li>
+			<li>zgłasza błąd lub wyjątek w przypadku:</tt>
+			<li>użycia <tt>eval</tt> lub <tt>with</tt>,</li>
+			<li>przypisania do zmiennej z globalnego scope'a (brak <tt>var</tt>),</li>
+			<li>zdefiniowania obiektu ze zduplikowanym kluczem,</tt></li>
+			<li>użycia notacji ósemkowej: <tt>012</tt>,</li>
+			<li>...</li>
+			<li>przygotowanie terenu pod kolejne wersje ECMAScript.<li>
+		</ul>
+
+		<div class="source">
+			<a href="http://hacks.mozilla.org/2011/01/ecmascript-5-strict-mode-in-firefox-4/">hacks.mozilla.org/2011/01/ecmascript-5-strict-mode-in-firefox-4/</a>
+		</div>
+	  </article>
+
+	  <article>
+		<h3>
+			Lektura uzupełniająca
+		</h3>
+
+		<ul style="width: 45%">
+			<li>Douglas Crockford, <em>JavaScript: The Good Parts</em>, O'Reilly Media / Yahoo Press 2008 (szczególnie dodatki)</li>
+			<li>David Flanagan, <em>JavaScript: The Definitive Guide</em></li>
+			<li><a href="http://javascript.crockford.com/javascript.html">JavaScript: The World's Most Misunderstood Programming Language</a> (javascript.crockford.com)</li>
+		</ul>
+
+		<img src='images/The-Definitive-Guide.jpg' style="position:absolute;right:50px;top:15%;height:70%;border:solid 1px #666">
+	  </article>
+
+      <article>
+		<h1 style="margin-top: 50px; text-align: right">Pytania?</h1>
+
+		<p>
+		  <!-- 250x250 - http://goqr.me/ -->
+          <img src='images/qr.png' style="position:absolute;left:50px;top:30%;height:60%">
+        </p>
+
+        <div class="source">
+        	<a href="http://slides.wikia.net/akai/20120110/javascript">http://slides.wikia.net/akai/20120110/javascript</a>
+        </div>
+
+      </article>
+    </section>
+
+  </body>
+</html>
