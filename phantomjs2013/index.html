@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>phantomjs, czyli webkitowa przeglądarka w konsoli [2013]</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/night.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+
+		<style>
+			.reveal pre code {
+				background-color: #111;
+				border: solid 1px #333;
+				max-height: none;
+			}
+
+			.reveal code {
+				font-family: Consolas, "Liberation Mono", Courier, monospace;
+				line-height: 1.3em;
+			}
+
+			.reveal ul li {
+				line-height: 1.3em;
+				padding: 0.2em 0;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section data-background="./images/phantomjs.png" data-background-size="300px" data-background-position="right bottom">
+					<h1>PhantomJS</h1>
+					<h3>webkitowa przeglądarka w konsoli</h3>
+					<p>
+						<small><a href="http://macbre.net">Maciej Brencz</a> / Wikia</small>
+					</p>
+				</section>
+
+				<section data-background="./images/lynx.jpg">
+					<h2>Trochę historii</h2>
+
+					<img src="./images/lynx.png">
+				</section>
+
+				<section>
+					<blockquote><big>
+						PhantomJS is a headless WebKit scriptable with a JavaScript API.<br>
+						It has fast and native support for various web standards: DOM handling, CSS selector, JSON, Canvas, and SVG.
+					</big></blockquote>
+				</section>
+
+				<section>
+					<h2>PhantomJS</h2>
+					<ul>
+						<li class="fragment">skryptowalna, oparta o WebKit, przeglądarka WWW,</li>
+						<li class="fragment">skrypty pisane w... <span class="fragment">JavaScript,</span></li>
+						<li class="fragment">dostępna także konsola,</li>
+						<li class="fragment">wbudowany serwer HTTP (eksperymentalny),</li>
+						<li class="fragment">konfiguracja viewportu, ciasteczek, nagłówków HTTP, ...,</li>
+						<li class="fragment">uruchamanie kodu JS w kontekście otwartej strony WWW.</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Co nowego w PhantomJS 1.9.2</h2>
+					<ul>
+						<li class="fragment">wsparcie dla własnych modułów CommonJS (<code>exports</code> i <code>require</code>),</li>
+						<li class="fragment">wbudowane moduły: webpage, system, fs, webserver, child_process,</li>
+						<li class="fragment">filtrowanie zapytań HTTP,</li>
+						<li class="fragment">ustawianie ciasteczek,</li>
+						<li class="fragment">komunikacja z poziomu JS strony z PhantomJSem (eksperymentalna),</li>
+						<li class="fragment">postęp wczytywania strony (<code>page.loadingProgress</code>),</li>
+						<li class="fragment">uruchamianie procesów (<code>spawn</code> i <code>execFile</code>).</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>PhantomJS w akcji</h2>
+
+<pre><code>var page = require('webpage').create(),
+	url = "http://akai.org.pl";
+
+page.open(url, function (status) {
+	console.log(url + " loaded");
+
+	// screenshot do pliku
+	page.render("akai.png");
+
+	// zakończ skrypt
+	phantom.exit();
+});</code></pre>
+
+					<img class="fragment" src="./images/akai-small.png" style="position: absolute; right: 0px; bottom: 0px;  -webkit-transform:rotate(20deg);">
+				</section>
+
+				<section>
+					<h2>Wywiad środowiskowy</h2>
+
+<pre><code>var page = require('webpage').create(),
+	url = "http://akai.org.pl";
+
+page.open(url, function (status) {
+	var title = page.evaluate(function() {
+		// jesteśmy w kontekście otwartej strony
+		return document.title;
+	});
+
+	console.log("Page title: " + title);
+
+	console.log("HTML elements: " + page.evaluate(function(tagName) {
+		return document.getElementsByTagName(tagName).length;
+	}, '*' /* parametr tagName przekazany z poziomu PhantomJSa */));
+
+	phantom.exit();
+});</code></pre>
+
+<pre class="fragment">
+$ phantomjs example-pagetitle.js
+Page title: AKAI
+HTML elements: 198
+</pre>
+				</section>
+
+				<section>
+					<h2>Wykrywanie błędów w kodzie JS</h2>
+
+<pre><code>var page = require('webpage').create(),
+	url = "http://akai.org.pl";
+
+// wywołania console.log
+page.onConsoleMessage = function(msg) {
+	console.log('LOG: ' + msg);
+};
+
+// błędy JS
+page.onError = function(msg, trace) {
+	console.log('ERROR: ' + msg);
+	trace.forEach(function(item) {
+		console.log('  ', item.file, ':', item.line);
+	});
+};
+
+page.open(url, function (status) {
+	phantom.exit();
+});
+</code></pre>
+
+<pre class="fragment">
+$ phantomjs example-error.js
+ERROR: ReferenceError: Can't find variable: Cufon
+   http://akai.org.pl/ : 19
+</pre>
+				</section>
+
+				<section>
+					<h2>Zakładka "Network"</h2>
+
+<pre><code>var page = require('webpage').create(),
+	url = "http://akai.org.pl",
+	requests = 0;
+
+page.onResourceRequested = function (request) {
+	console.log('Requested ' + JSON.stringify(request, undefined, 4));
+	requests++; // zliczajmy wszystkie zapytania HTTP
+};
+
+page.onResourceReceived = function (response) {
+	// response.stage = start | end
+	// response.status = kod HTTP (200, 301, 302, 404, ...)
+	console.log('Received ' + JSON.stringify(response, undefined, 4));
+};
+
+page.open(url, function (status) {
+	console.log("Number of request: " + requests);
+	phantom.exit();
+});
+</code></pre>
+
+<pre class="fragment">
+$ phantomjs example-netsniff.js
+Number of request: 67
+</pre>
+				</section>
+
+				<section data-background="./images/another.jpg">
+					<h2>A teraz...</h2>
+				</section>
+
+				<section>
+					<h2>...nakręcimy film "Another World"</h2>
+
+<pre><code>var page = require('webpage').create(),
+	url = "http://www.megidish.net/awjs/";
+
+page.viewportSize = {width: 800, height: 400}; // rozmiar "klatek"
+
+page.open(url, function (status) {
+	var f = 0;
+
+	// wstrzyknij jQuery do otwartej strony i usuń wszystkie tagi &lt;p&gt;
+	page.includeJs("http://code.jquery.com/jquery-2.0.3.min.js", function() {
+		page.evaluate(function() {
+			$('p').remove();
+		});
+	});
+
+	setInterval(function() {
+		page.render('movie/movie-' + (f < 9 ? ('0' + f) : f) + '.png');
+		console.log('Frame #' + f);
+
+		f++;
+		if (f > 80) { // można i dłużej ;)
+			phantom.exit();
+		}
+	}, 250);
+});
+</code></pre>
+
+<pre class="fragment">
+$ phantomjs example-movie.js
+</pre>
+				</section>
+
+				<section>
+					<video width="100%" height="100%" controls>
+						<source src="images/movie.ogv" type="video/ogg" />
+					</video>
+				</section>
+
+				<section>
+					<h2>Kilka uwag</h2>
+					<ul>
+						<li class="fragment">brak wsparcia dla Flasha,</li>
+						<li class="fragment">dokumentacja nie jest aktualizowana na bieżąco,</li>
+						<li class="fragment">skrypty należy kończyć wywołaniem <code>phantom.exit()</code>,</li>
+						<li class="fragment">nie wszystkie funkcje WebKita są dostępne (geolokalizacja, <code>&lt;video&gt;</code>, <code>&lt;audio&gt;</code>, <code>performance.timing</code>, ...),</li>
+						<li class="fragment">przedstawia się jako przeglądarka z "interfejsem dotykowym" (<code>ontouchstart</code>),</li>
+						<li class="fragment">usuwane są niektóre nagłówki HTTP: <code>Content-Length</code>, związane z ciastkami.</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Zastosowania</h2>
+					<ul>
+						<li class="fragment">badanie i monitorowanie wydajności stron WWW - <a href="https://github.com/macbre/phantomas">phantomas</a>,</li>
+						<li class="fragment">uruchamianie testów jednostkowych,</li>
+						<li class="fragment">"lekki" klient dla testów przeglądarkowych (GhostDriver),</li>
+						<li class="fragment">wykonywanie zrzutów ekranu / filmów z akcji na stronie,</li>
+						<li class="fragment">web scrapping,</li>
+						<li class="fragment">...</li>
+					</ul>
+				</section>
+
+				<section data-background="./images/the-end.jpg">
+					<h2 style="text-align: right; margin-top: 600px">
+						<a href="http://slides.wikia.net/akai/" style="color: white; text-decoration: underline">slides.wikia.net/akai</a>
+					</h2>
+				</section>
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: !true,
+				progress: true,
+				history: true,
+				center: true,
+
+				backgroundTransition: 'slide',
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
