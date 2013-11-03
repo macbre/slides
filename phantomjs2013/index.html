@@ -80,7 +80,7 @@
 					<ul>
 						<li class="fragment">skryptowalna, oparta o WebKit, przeglądarka WWW,</li>
 						<li class="fragment">skrypty pisane w... <span class="fragment">JavaScript,</span></li>
-						<li class="fragment">dostępna także konsola,</li>
+						<li class="fragment">dostępny tryb interaktywny (<abbr title="Read-Eval-Print Loop">REPL</a>),</li>
 						<li class="fragment">wbudowany serwer HTTP (eksperymentalny),</li>
 						<li class="fragment">konfiguracja viewportu, ciasteczek, nagłówków HTTP, ...,</li>
 						<li class="fragment">uruchamanie kodu JS w kontekście otwartej strony WWW.</li>
@@ -257,11 +257,13 @@ $ phantomjs example-movie.js
 					<h2>Kilka uwag</h2>
 					<ul>
 						<li class="fragment">brak wsparcia dla Flasha,</li>
+						<li class="fragment">tryb REPL wymaga jeszcze <a href="https://github.com/ariya/phantomjs/issues/11180">dopracowania</a><span class="fragment"> (<code>Date.now() === 0</code>),</span></li>
+						<li class="fragment">brak niektórych funkcji z ES5<span class="fragment"> (np. <code><a href="https://github.com/ariya/phantomjs/issues/10522">Function.prototype.bind</a></code>),</span></li>
 						<li class="fragment">dokumentacja nie jest aktualizowana na bieżąco,</li>
 						<li class="fragment">skrypty należy kończyć wywołaniem <code>phantom.exit()</code>,</li>
-						<li class="fragment">nie wszystkie funkcje WebKita są dostępne (geolokalizacja, <code>&lt;video&gt;</code>, <code>&lt;audio&gt;</code>, <code>performance.timing</code>, ...),</li>
+						<li class="fragment">nie wszystkie funkcje WebKita są dostępne<span class="fragment"> (geolokalizacja, <code>&lt;video&gt;</code>, <code>&lt;audio&gt;</code>, <code>performance.timing</code>, WebGL, IndexedDB),</span></li>
 						<li class="fragment">przedstawia się jako przeglądarka z "interfejsem dotykowym" (<code>ontouchstart</code>),</li>
-						<li class="fragment">usuwane są niektóre nagłówki HTTP: <code>Content-Length</code>, związane z ciastkami.</li>
+						<li class="fragment">niedostępne są niektóre nagłówki HTTP: <code>Content-Length</code>, związane z ciastkami.</li>
 					</ul>
 				</section>
 
@@ -269,11 +271,11 @@ $ phantomjs example-movie.js
 					<h2>Zastosowania</h2>
 					<ul>
 						<li class="fragment">badanie i monitorowanie wydajności stron WWW - <a href="https://github.com/macbre/phantomas">phantomas</a>,</li>
-						<li class="fragment">uruchamianie testów jednostkowych,</li>
+						<li class="fragment">uruchamianie testów jednostkowych (Jasmine, QUnit),</li>
 						<li class="fragment">"lekki" klient dla testów przeglądarkowych (GhostDriver),</li>
 						<li class="fragment">wykonywanie zrzutów ekranu / filmów z akcji na stronie,</li>
-						<li class="fragment">web scrapping,</li>
-						<li class="fragment">...</li>
+						<li class="fragment">web scrapping<span class="fragment">  (<a href="https://github.com/ariya/phantomjs/blob/master/examples/pizza.js">znajdowanie najbliższej pizzy poprzez Yelp.com</a>),</span></li>
+						<li class="fragment"><a href="https://github.com/ariya/phantomjs/wiki/Related-Projects">...</a></li>
 					</ul>
 				</section>
 
