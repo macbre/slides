@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<!--
+  Google HTML5 slide template
+
+  Authors: Luke Mahé (code)
+           Marcin Wichary (code and design)
+
+           Dominic Mazzoni (browser compatibility)
+           Charles Chen (ChromeVox support)
+
+  URL: http://code.google.com/p/html5slides/
+-->
+
+<html>
+  <head>
+    <title>phantomjs, czyli webkitowa przeglądarka w konsoli</title>
+
+    <meta charset='utf-8'>
+    <script src='slides/slides.js'></script>
+  </head>
+
+  <style>
+	.slides.template-wikia > article:not(.nobackground):not(.biglogo):not(.fill) {
+		background: url(images/wikia-logo.png) 680px 625px no-repeat;
+		background-color: white;
+	}
+
+	.slides.template-wikia > article > h3 {
+		color: #0069AC;
+	}
+
+	.slides.template-wikia strong {
+		color: #0069AC;
+	}
+
+	.slides.template-wikia th {
+		background-color: #f1f1f1;
+	}
+
+	.slides.template-wikia > article pre {
+		margin: 30px 0;
+	}
+
+	.slides.template-wikia > article code {
+		font-family: courier;
+		display: block;
+		letter-spacing: -1px;
+	}
+
+	.slides.template-wikia > article code:first-letter {
+		color:  #0069AC;
+		font-weight: bold;
+	}
+
+	.slides.template-wikia pre.console {
+		border: none;
+		background: rgba(50,50,50,0.8);
+		color: #eee;
+	}
+	.slides.template-wikia pre.console * {
+		color: #eee;
+	}
+  </style>
+
+  <body style='display: none'>
+
+    <section class='slides layout-regular template-wikia'>
+
+      <!-- Your slides (<article>s) go here. Delete or comment out the
+           slides below. -->
+
+      <article class="nobackground" style="background: #000">
+        <h1 style="margin-top: 20px; color: #ccc; font-size: 1.5em"><big style="color: #fff"><tt>$ phantomjs</tt></big><br>czyli webkitowa przeglądarka w&nbsp;konsoli</h1>
+        <p style="margin-top: 330px; color: #ccc">
+          <tt style="letter-spacing: -4px">Maciej Brencz, Wikia Inc.
+          <br>
+          AKAI, 8 maja 2012</tt>
+        </p>
+
+		<p>
+			<img src="images/phantomjs.png" style="position:absolute; bottom:0; right:0; height:500px">
+		</p>
+      </article>
+
+	  <article style="background: url(images/lynx.jpg) 0 -75px">
+		<h3 style="color: #fff">
+			Szczypta historii: przeglądarka w konsoli kiedyś
+		</h3>
+
+		<div class="build">
+			<img src="images/lynx.png" style="position: absolute; bottom: 50px; right: 50px">
+			<span style="position: absolute; bottom: 350px; right: 50px; color: #fff; font-size: 1.75em; letter-spacing: -5px"><tt>$ lynx akai.org.pl</tt></span>
+		</div>
+	  </article>
+
+	  <article>
+		<h3>
+			phantomjs: z czym to się je?
+		</h3>
+
+		<blockquote>
+			<q style="margin: 20px">PhantomJS is a headless WebKit with JavaScript API. It has fast and native support for various web standards: DOM handling, CSS selector, Canvas, SVG.</q>
+			<cite>phantomjs.org</cite>
+		</blockquote>
+	  </article>
+
+	  <article>
+		<h3>
+			phantomjs: z czym to się je?
+		</h3>
+		<ul class="build">
+			<li>skryptowalna przeglądarka działająca w konsoli</li>
+			<li>oparta o silnik WebKit (<tt>PhantomJS/1.5.0 Safari/534.34</tt>)</li>
+			<li>skrypty pisane w JavaScript</li>
+			<li>dostępne moduły znane z CommonJS (<tt>system</tt>, <tt>fs</tt>)</li>
+			<li>wbudowany prosty serwer HTTP (<tt>webserver</tt>)</li>
+			<li>konfiguracja: rozmiary viewportu, user agent, plik z&nbsp;ciastkami, JavaScript włączony / wyłączony, ...</li>
+			<li>możliwość uruchamiania kodu JavaScript w&nbsp;środowisku otwartej strony (<tt>page.evaluate</tt>)</li>
+			<li>to jednak <strong>nie jest NodeJS</strong> (brak wsparcia dla własnych modułów, ...).</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			phantomjs: krok pierwszy, czyli...
+		</h3>
+
+		<ul class="build">
+			<li>binarka dla Linuxa, Mac OS X i Windowsa</li>
+			<li>paczki w większości dystrybucji Linuxa,<br>port we FreeBSD</li>
+<pre class="console">
+$ phantomjs --version
+1.5.0</pre>
+		</ul>
+
+		<div class="source">
+			<a href="http://code.google.com/p/phantomjs/wiki/Installation">Instalacja</a>
+		</div>
+	  </article>
+
+	  <article>
+		<h3>
+			Nasz pierwszy skrypt
+		</h3>
+
+<pre>
+var page = require('webpage').create(),
+    url = "http://akai.org.pl";
+
+page.open(url, function (status) {
+    console.log(url + " loaded");
+
+    // screenshot do pliku
+    page.render("akai.png");
+
+    // zakończ skrypt
+    phantom.exit();
+});
+</pre>
+
+<pre class="console" style="position: relative; z-index: 2">
+$ phantomjs example-screeshot.js
+</pre>
+
+		<p class="build">
+			<img src="images/akai-small.png" height="850" width="496" style="position: absolute; right: -95px; bottom: -120px; -webkit-transform:rotate(20deg);">
+		</p>
+	  </article>
+
+	  <article>
+		<h3>
+			Przeglądarko, powiedz...
+		</h3>
+
+<pre>
+var page = require('webpage').create(),
+    url = "http://akai.org.pl";
+
+page.open(url, function (status) {
+    var title = page.evaluate(function() {
+        // jesteśmy w kontekście otwartej strony
+        return document.title;
+    });
+    console.log("Page title: " + title);
+    console.log("HTML elements: " + page.evaluate(function() {
+        return document.getElementsByTagName('*').length;
+    }));
+    phantom.exit();
+});
+</pre>
+
+<pre class="console">
+$ phantomjs example-pagetitle.js
+Page title: AKAI
+HTML elements: 175
+</pre>
+	  </article>
+
+	  <article>
+		<h3>
+			Detekcja błędów
+		</h3>
+
+<pre>
+var page = require('webpage').create(),
+    url = "http://akai.org.pl";
+
+page.onConsoleMessage = function(msg) {
+    console.log('LOG: ' + msg);
+};
+page.onError = function(msg, trace) {
+    console.log('ERROR: ' + msg);
+    trace.forEach(function(item) {
+        console.log('  ', item.file, ':', item.line);
+    });
+};
+page.open(url, function (status) {phantom.exit()});
+</pre>
+
+<pre class="console">
+$ phantomjs example-error.js
+ERROR: ReferenceError: Can't find variable: Cufon
+   http://akai.org.pl/ : 18
+LOG: Please specify a ShareThis Publisher Key
+For help, contact support@sharethis.com
+</pre>
+	  </article>
+
+
+	  <article>
+		<h3>
+			phantomjs jako packet sniffer
+		</h3>
+
+<pre style="font-size: 0.6em; line-height: 1.4em">
+var page = require('webpage').create(),
+    url = "http://akai.org.pl",
+    requests = 0;
+
+// żądanie HTTP zostało wysłane
+page.onResourceRequested = function (request) {
+    console.log('Request ' + JSON.stringify(request, undefined, 4));
+};
+// otrzymano odpowiedź od serwera HTTP
+page.onResourceReceived = function (response) {
+    console.log('Receive ' + JSON.stringify(response, undefined, 4));
+    requests++; // zliczajmy wszystkie zapytania HTTP
+};
+page.open(url, function (status) {
+    console.log("Number of request: " + requests);
+    phantom.exit();
+});
+</pre>
+
+<pre class="console">
+$ phantomjs example-netsniff.js
+Number of request: 143
+</pre>
+	  </article>
+
+	  <article class="fill">
+		<h3>
+			Kręcimy film
+		</h3>
+
+<div class="build">
+<pre style="font-size: 0.6em; line-height: 1.1em">
+var page = require('webpage').create(),
+    // Another World
+    url = "http://www.megidish.net/awjs/";
+
+page.viewportSize = {width: 800, height: 400};
+
+page.open(url, function (status) {
+    var f = 0;
+
+    page.includeJs("http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js", function() {
+        page.evaluate(function() {
+            $('p').remove();
+        });
+    });
+
+    setInterval(function() {
+        page.render('movie/movie-' + (f < 9 ? ('0' + f) : f) + '.png');
+        console.log('Frame #' + f);
+
+        f++;
+        if (f > 80) {
+            phantom.exit();
+        }
+    }, 250);
+});
+</pre>
+
+<pre class="console">
+$ phantomjs example-movie.js
+</pre>
+</div>
+		<img src="images/another-world.png">
+
+	  </article>
+
+	  <article class="fill">
+		<video width="100%" height="100%" controls>
+			<source src="images/movie.ogv" type="video/ogg" />
+		</video>
+	  </article>
+
+	  <article>
+		<h3>
+			Monitorowanie wydajności stron WWW
+		</h3>
+
+		<ul class="build">
+			<li>liczba i typ żądań HTTP</li>
+			<li>onDOMready, window.onload (czas)</li>
+			<li>rozmiar ciasteczek, liczba wpisów w local storage</li>
+			<li>złożoność HTMLa, liczba zmiennych globalnych w JS'ie</li>
+			<li>logowanie się do serwisu (<tt>--cookies-file=jar.txt</tt>).</li>
+			<img src="images/graph.png" height="230">
+		</ul>
+
+        <div class="source">
+        	<a href="http://trac.wikia-code.com/browser/wikia/trunk/extensions/wikia/PerformanceMetrics/providers/phantomjs/metrics.js">PerformanceMetrics</a>
+        </div>
+	  </article>
+
+	  <article>
+		<h3>
+			phantomjs: o czym należy pamiętać
+		</h3>
+		<ul class="build">
+			<li>phantomjs <strong>nie sygnalizuje błędów</strong> w składni skryptu</li>
+			<li>skrypty należy kończyć instrukcją <tt>phantom.exit()</tt></li>
+			<li>nie wszystkie funkcje WebKita są dostępne (geolokalizacja, <tt>&lt;video&gt;</tt>, <tt>&lt;audio&gt;</tt>, <tt>performance.timing</tt>, ...)</li>
+			<li>przedstawia się jako przeglądarka z "interfejsem dotykowym" (<tt>ontouchstart</tt>)</li>
+			<li>usuwane są nagłówki odpowiedzi HTTP <tt>Content-Length</tt> (pole <tt>bodySize</tt> zawiera błędne dane).</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			phantomjs: potencjalne zastosowania
+		</h3>
+		<ul class="build">
+			<li>monitoring aplikacji WWW (wydajność, HTTP 404, błędy JS)</li>
+			<li>uruchamianie testów jednostkowych dla kodu JS</li>
+			<li>"lekki" klient dla Selenium</li>
+			<li>automatyczny upload plików (<tt>page.uploadFile</tt>)</li>
+			<li>wykonywanie zrzutów ekranów (<tt>page.render</tt>)</li>
+			<li>web scrapping</li>
+			<li>detekcja browser sniffingu (<tt>navigator.__defineGetter__</tt>).</li>
+		</ul>
+        <div class="source">
+        	<a href="http://code.google.com/p/phantomjs/wiki/Interface">phantomjs.org</a>
+        </div>
+	  </article>
+
+      <article class="fill">
+		<h1 style="margin-top: 50px; text-align: right; color: #fff">Pytania?</h1>
+
+		<p>
+		  <!-- 250x250 - http://goqr.me/ -->
+          <img src='images/qr_akai_slides.png' style="position:absolute;right:70%; top: 62%; height:25%; min-height: 250px; min-width: 250px; z-index: 20; border: solid 10px #fff">
+        </p>
+
+        <img src='images/finis.jpg'>
+
+        <div class="source" style="right: 60px; left: auto">
+        	<a href="http://slides.wikia.net/akai/20120508/phantomjs" style="color: #fff">http://slides.wikia.net/akai/20120508/phantomjs</a>
+        </div>
+
+      </article>
+    </section>
+
+  </body>
+</html>

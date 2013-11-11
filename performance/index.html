@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+
+<!--
+  Google HTML5 slide template
+
+  Authors: Luke Mahé (code)
+           Marcin Wichary (code and design)
+
+           Dominic Mazzoni (browser compatibility)
+           Charles Chen (ChromeVox support)
+
+  URL: http://code.google.com/p/html5slides/
+-->
+
+<html>
+  <head>
+    <title>Wydajność aplikacji internetowych</title>
+
+    <meta charset='utf-8'>
+    <script src='slides/slides.js'></script>
+  </head>
+
+  <style>
+	.slides.template-wikia > article:not(.nobackground):not(.biglogo):not(.fill) {
+		background: url(images/wikia-logo.png) 680px 625px no-repeat;
+		background-color: white;
+	}
+
+	.slides.template-wikia > article > h3 {
+		color: #0069AC;
+	}
+
+	.slides.template-wikia strong {
+		color: #0069AC;
+	}
+
+	.slides.template-wikia th {
+		background-color: #f1f1f1;
+	}
+
+	.slides.template-wikia > article pre {
+		margin: 30px 0;
+	}
+
+	.slides.template-wikia > article code {
+		font-family: courier;
+		display: block;
+		letter-spacing: -1px;
+	}
+
+	.slides.template-wikia > article code:first-letter {
+		color:  #0069AC;
+		font-weight: bold;
+	}
+  </style>
+
+  <body style='display: none'>
+
+    <section class='slides layout-regular template-wikia'>
+
+      <!-- Your slides (<article>s) go here. Delete or comment out the
+           slides below. -->
+
+      <article>
+        <h1 style="margin-top: 20px; color: #0069AC"><big>Wydajność stron</big><br>i aplikacji internetowych</h1>
+        <p style="margin-top: 350px; color: #0069AC">
+          Maciej Brencz, Wikia Inc.
+          <br>
+          AKAI, 27 marca 2012
+        </p>
+
+		<p>
+			<img src="images/barry-firstapp.jpg" style="position:absolute; bottom:0; right:0; height:500px">
+		</p>
+
+		<div class="source">
+			<a href="http://dchallofjustice.com/CJgallery/displayimage.php?pid=2290">dchallofjustice.com/CJgallery/displayimage.php?pid=2290</a>
+		</div>
+      </article>
+
+	  <article>
+		<h3>
+			Plan prezentacji
+		</h3>
+
+		<ul class="build">
+			<li>dlaczego wydajność jest ważna?</li>
+			<li>backend vs frontend</li>
+			<li>najlepsze praktyki</li>
+			<li>monitoring</li>
+			<li>studium przypadku</li>
+			<li>narzędzia.</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			Dlaczego wydajność jest ważna?
+		</h3>
+
+		<ul class="build">
+			<li>kto chce czekać 10 sekund na załadowanie podstrony sklepu internetowego?</li>
+			<li>YAHOO! dodało 400 ms opóźnienia do czasu ładowania stron &raquo; <strong>spadek odsłon o 5-9%</strong></li>
+			<li>Mozilla poprawiła czas ładowania strony "reklamowej" Firefoxa o 2,2 sekundy &raquo; <strong>wzrost pobrań o 15,4%</strong> (60 milionów w skali roku)</li>
+			<li>Netflix po zaimplementowaniu tylko jednej z reguł (kompresja GZIP) <strong>zmniejszyło ruch na  wyjściu z&nbsp;serwerów o 50%</strong></li>
+			<li>dbanie o wydajność powinno być stale obecne w projekcie.</li>
+		</ul>
+
+		<div class="source">
+			<a href="http://www.stevesouders.com/blog/2010/05/07/wpo-web-performance-optimization/">www.stevesouders.com/blog/2010/05/07/wpo-web-performance-optimization/</a>
+		</div>
+	  </article>
+
+	  <article class="fill">
+		<img src="images/walmart-convertion-rate.png">
+
+		<div class="source">
+			<a href="http://www.webperformancetoday.com/2012/02/28/4-awesome-slides-showing-how-page-speed-correlates-to-business-metrics-at-walmart-com/">źródło</a>
+		</div>
+	  </article>
+
+	  <article class="fill">
+		<h3>
+			Co wiedzie nas do konluzji...
+		</h3>
+
+		<img src="images/IMG_3415.jpg">
+	  </article>
+
+	  <article class="fill">
+		<h3>
+			Gdzie poprawiać wydajność (backend czy frontend)?
+		</h3>
+
+		<img src='images/waterfall_akai.png' style="opacity: 0.8">
+
+		<ul class="build" style="color: #000; margin-top: 400px">
+			<li>"tylko" 20% czasu ładowania strony zajmuje generowanie HTML'a po stronie serwera (backend)</li>
+			<li>80% czasu to praca przeglądarki (frontend)</li>
+		</ul>
+
+		<div class="source">
+			<a href="http://www.webpagetest.org/result/120324_NB_3PZG4/1/details/">Waterfall dla głównej strony akai.org.pl</a> (webpagetest.org)
+		</div>
+	  </article>
+
+	  <article>
+		<blockquote>
+			<q>80-90% of the end-user response time is spent on the frontend. Start there.</q>
+			<cite>The Performance Golden Rule</cite>
+		</blockquote>
+	  </article>
+
+	  <article>
+		<h3>
+			Wąskie gardła
+		</h3>
+
+		<ul class="build">
+			<li>nadal pamiętajmy o wydajności po stronie serwera (optymalizacja zapytań SQL, cache'owanie)</li>
+			<li>protokół HTTP oparty o TCP/IP &raquo; kosztowne nawiązanie połączenia + ew. SSL
+			&raquo; <tt>Keep-Alive</tt>, <a href="http://www.igvita.com/2011/10/04/optimizing-http-keep-alive-and-pipelining/">HTTP pipelining</a></li>
+			<li>przeglądarki ograniczają liczbę równoległych pobrań z jednej domeny &raquo; <a href="http://www.stevesouders.com/blog/2009/05/12/sharding-dominant-domains/">domain sharding</a></li>
+			<li>użycie różnych domen &raquo; zapytania DNS</li>
+			<li>przeglądarka musi pobrać i zinterpretować wiele plików: HTML, JavaScript, CSS, obrazki, flash, ...</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<blockquote>
+			<q>The fastest HTTP request is the one not made.</q>
+		</blockquote>
+	  </article>
+
+	  <article>
+		<h3>
+			Najlepsze praktyki
+		</h3>
+
+		<ul class="build">
+			<li><strong>zmniejszenie ilości pobieranych danych</strong></li>
+			<li>ograniczenie liczby zapytań &raquo; redukcja przekierowań HTTP, błędów HTTP 404 (brakujące pliki), łączenie plików CSS oraz JS</li>
+			<li>minifikacja plików CSS oraz JS</li>
+			<li>optymalizacja obrazków</li>
+			<li>kompresja GZIP przesyłanych danych</li>
+			<li>wykorzystanie cache'a przeglądarki (pliki statyczne, zapytania AJAX) &raquo; nagłówki HTTP, obsługa ciasteczek, CDN.</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			Optymalizacja plików CSS i JavaScript
+		</h3>
+
+		<ul class="build">
+			<li>minifikacja: usunięcie białych znaków, komentarzy + zaawansowana "obróbka" kodu JS</li>
+			<li>kompresja przesyłanego kodu: użycie algorytmu GZIP</li>
+			<li>jQuery 1.7.2 - 247 kB kodu, 92 kB po minifikacji, 33 kB po minifikacji i kompresji (<strong>ponad 7x mniej</strong>)</li>
+			<li>narzędzia: <a href="http://code.google.com/p/cssmin/">cssmin</a>,
+			<a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a>, <a href="https://github.com/mishoo/UglifyJS">uglifyjs</a>.</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			Optymalizacja obrazków (cz. 1)
+		</h3>
+
+		<ul class="build">
+			<li>wybór formatu: GIF, PNG czy JPEG + wybór kompresji</li>
+			<li>usunięcie bloków EXIF z plików JPEG (prawa autorskie)</li>
+			<li>ikonki serwowane z jednego pliku - tzw. <em>sprite</em>.<br>
+			<img src='images/sprite.png' width="400" style="margin-top: 20px">
+			<pre>
+.icon {
+	background-image: url(/images/sprite.png);
+}
+.icon.ok {
+	background-position: -1096px -80px;
+}</pre>
+			</li>
+		</ul>
+		<div class="source">
+        	<a href="http://zoompf.com/blog/2012/02/poor-choices-are-ruining-the-web">Poor Choices are Ruining the Web</a>
+        </div>
+	   </article>
+
+	    <article>
+		<h3>
+			Optymalizacja obrazków (cz. 2)
+		</h3>
+
+		<ul class="build">
+			<li>serwowanie obrazków we właściwych rozmiarach (unikajmy skalowania w HTMLu)</li>
+			<li>małe obrazki (1-2 kB) umieszczone "bezpośrednio" w pliku CSS - enkodowanie base64<br>
+			<pre>
+#foo {
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAlCAYA
+}</pre></li>
+			<li>wykorzystanie cache'a przeglądarki (pliki statyczne)</li>
+			<li>narzędzia: <a href="http://pmt.sourceforge.net/pngcrush/">pngcrush</a>, <a href="http://www.smushit.com/ysmush.it/">smush.it</a>, <a href="http://pngquant.org/">pngquant</a>.</li>
+		</ul>
+	   </article>
+
+	   <article>
+		<h3>
+			Nagłówki HTTP, a wydajność
+		</h3>
+
+		<ul class="build">
+			<li>zapytania POST nigdy nie są cache'owane</li>
+			<li>nagłówki odpowiedzi pozwalają określić czas cache'owania statycznej treści przez przeglądarkę</li>
+			<li><tt>Expires: Fri, 20 Apr 2012 10:27:47 GMT</tt></li>
+			<li><tt><a href="http://condor.depaul.edu/dmumaugh/readings/handouts/SE435/HTTP/node24.html">Cache-Control</a>: public, max-age=31536000</tt> (cache'uj na jeden rok, wprowadzony w HTTP 1.1)</li>
+			<li>nagłówek <tt>Last-Modified</tt> dla treści dynamicznej</li>
+			<li><tt>If-Modified-Since</tt> wysyłane przez przeglądarkę &raquo; nowa treść lub odpowiedź <tt>304 Not Modified</tt></li>
+			<li>jak inwalidować stare wersje plików przy długim czasie cache'owania?</li>
+		</ul>
+
+		<div class="source">
+        	<a href="http://developer.yahoo.com/performance/rules.html#expires">Add an Expires or a Cache-Control Header</a>
+        </div>
+	  </article>
+
+	  <article class="fill">
+		<h3>
+			<strike>Ghost</strike> Cache buster na ratunek
+		</h3>
+
+		<ul class="build" style="color: #fff; margin-top: 420px">
+			<li>identyfikator (np. rewizja pliku) dodawany jako część URLa</li>
+			<li><tt>http://cdn.foo.net/images/logo.png?20</tt></li>
+			<li><tt>http://cdn.foo.net/r20/images/logo.png</tt></li>
+		</ul>
+
+		<img src="images/ghost-busters.jpg">
+	  </article>
+
+	   <article>
+		<h3>
+			Domeny bez ciasteczek
+		</h3>
+
+		<ul class="build">
+			<li>ciasteczka "zatruwają" <strong>wszystkie zapytania</strong> wysyłane na domenę, w której są ustawione &raquo; dodawane są również do zapytań o pliki statyczne</li>
+			<li>inne domeny do serwowania plików statycznych<br>(<u>wikia.com</u> vs <u>images.wikia.nocookie.net</u>)</li>
+			<li>zapytania nie zawierają niepotrzebnych ciasteczek</li>
+			<li>konieczny cache buster w URLach.</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			Content Delivery Network (CDN)
+		</h3>
+
+		<ul class="build">
+			<li>"proxy" serwujące treść statyczną (JS, CSS, obrazki, flash)</li>
+			<li>serwery rozsiane po całym świecie widoczne pod wspólną domeną &raquo; różne adresy IP w różnych miejscach świata</li>
+			<li>pliki serwowane z najbliższych użytkownikowi serwerów &raquo; krótszy czas odpowiedzi</li>
+			<li>zapytania nie zawierają niepotrzebnych ciasteczek</li>
+			<li>Yahoo! po wprowadzeniu CDN zanotowało <strong>20% skrócenie czasu ładowania strony</strong><br><br></li>
+			<li>darmowy CDN na Google AppEngine (np. <a href="http://code.google.com/p/cirruxcache/">CirruxCache</a>)</li>
+			<li><a href="http://www.sencha.com/learn/how-to-use-src-sencha-io/">src.sencha.io</a> - darmowy CDN dla obrazków z funkcją ich optymalizacji i skalowania.</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			Ładowanie plików CSS i JavaScript, a wydajność
+		</h3>
+
+		<ul class="build">
+			<li>CSS: tagi <tt>&lt;link&gt;</tt> jak najwcześniej (sekcja <tt>&lt;head&gt;</tt>) &raquo; wczesne aplikowanie CSS'a<br><br></li>
+			<li>JavaScript: tagi <tt>&lt;script&gt;</tt> na samym dole dokumentu (przed <tt>&lt;/body&gt;</tt>) &raquo; ściąganie JS'a blokuje renderowanie strony</li>
+			<li>wczytywanie bez blokowania: atrybut <tt>async</tt> wprowadzony w HTML5 &raquo; JS wykonuje się natychmiast po pobraniu</li>
+			<li><strong>nie zachowuje kolejności wykonywania</strong> asynchronicznych skryptów</li>
+			<li>różne zachowanie w różnych przeglądarkach (<a href="http://stevesouders.com/tests/jsorder.php">test</a>).</li>
+		</ul>
+		<div class="source">
+        	<a href="http://www.stevesouders.com/blog/2012/01/13/javascript-performance/">JavaScript Performance</a>
+        </div>
+	  </article>
+
+	  <article>
+		<h3>
+			Kod 3rdparty: Facebook, Twitter, Google Analytics, ...
+		</h3>
+
+		<pre>
+var script = document.createElement("script"),
+	firstScript = document.getElementsByTagName('script')[0];
+script.type = "text/javascript";
+script.async = true; // asynchronicznie, bez wzajemnego blokowania
+script.src = "http://foo.net/script.js";
+firstScript.parentNode.insertBefore(sNew, firstScript);</pre>
+
+		<ul class="build">
+			<li>skrypty "zewnętrzne" wczytywane asynchronicznie (bez blokowania, wykonują się natychmiast po pobraniu)</li>
+			<li><em>SPOF</em> - single point of failure &raquo; ryzyko zablokowania wczytywania strony w przypadku problemów z zewnętrznym serwerem &raquo; rozwiązaniem wczytywanie asynchroniczne.</li>
+		</ul>
+		<div class="source">
+        	<a href="http://www.stevesouders.com/blog/2011/10/13/frontend-spof-survery/">Frontend SPOF survey</a>
+        </div>
+	  </article>
+
+	  <article>
+		<h3>
+			Dalsze kroki (cz. 1)
+		</h3>
+
+		<ul class="build">
+			<li>optymalizacja HTMLa &raquo; zmniejszenie liczby elementów DOM (szybsze renderowanie, szukanie elementów)</li>
+			<li>optymalizacja kodu JS &raquo; profiling, analiza kodu uruchamianego na <tt>onDOMready</tt></li>
+			<li>optymalizacja kodu CSS &raquo; optymalizacja selektorów, wykorzystanie dziedziczenia, unikanie <tt>expression</tt></li>
+			<li>poprawne cache'owanie zapytań AJAXowych</li>
+			<li>lazyloading &raquo; ładowanie plików tylko, gdy potrzebne</li>
+			<li>użycie localStorage jako cache'a &raquo; aplikacje mobilne</li>
+			<li>prerendering w Chrome 13+ (<tt>&lt;link rel="prerender" href="cart-buy.php"&gt;</tt>).</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			Dalsze kroki (cz. 2)
+		</h3>
+
+		<ul class="build">
+			<li>preloading obrazków &raquo; poprawa postrzeganej przez użytkownika wydajności</li>
+			<li>wykorzystanie możliwości CSS3, HTML5 &raquo; gradienty, zaokrąglone rogi, <tt>@font-face</tt> zamiast obrazków, canvas, webworkers, ...</li>
+			<li>ograniczenie użycia ciasteczek &raquo; krótsze nazwy, rozważenie użycia localStorage</li>
+			<li>równoległe ściąganie obrazków z kilku domen (<tt>images1.foo.net</tt>, <tt>images2.foo.net</tt>, ...) - optymalnie cztery domeny</li>
+			<li>pobieranie tylko zmieniającego się fragmentu strony (wraz z użyciem <a href="http://html5demos.com/history"><tt>W3C History API</tt></a>).</li>
+		</ul>
+
+		<div class="source">
+        	<a href="http://yuiblog.com/blog/2007/04/11/performance-research-part-4/">Maximizing Parallel Downloads in the Carpool Lane</a>
+			/
+			<a href="http://code.google.com/speed/articles/html5-performance.html">Using HTML 5 for performance improvements</a>
+        </div>
+	  </article>
+
+	  <article>
+		<h3>
+			Studium przypadku - <a href="http://www.put.poznan.pl/">www.put.poznan.pl</a>
+		</h3>
+
+		<ul class="build">
+			<li>PageSpeed index: 78 / YSlow: ocena B (index 87)</li>
+			<li>51 zapytań HTTP - 389,3 kB (z pustym cachem)</li>
+			<li>pliki JS ładowane na górze strony (blokowanie renderowania)</li>
+			<li>brak minifikacji plików JS i CSS</li>
+			<li>strona ściąga 47 plików statycznych (45,5 kB) z domeny strony &raquo; użycie CDN lub domeny nocookie?</li>
+			<li>skalowanie niezoptymalizowanych obrazków w HTMLu (łącznie 125 kB do zaoszczędzenia)</li>
+			<li>małe obrazki powinny korzystać ze sprite'a</li>
+			<li>kilka fragmentów zakomentowanych w HTMLu, puste elementy.</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			Monitorowanie rezultatów
+		</h3>
+
+		<ul class="build">
+			<li>regularne, automatyczne pobieranie danych z Google PageSpeed API &raquo; część danych widoczna w Google Webmaster Tools</li>
+			<li>RUM, czyli Real User Monitoring</li>
+			<li><a href="http://support.google.com/analytics/bin/answer.py?hl=en&answer=2383341">Google Analytics</a> monitoruje czas ładowania strony dla 10% odsłon (SiteSpeed)</li>
+			<li><a href="http://dvcs.w3.org/hg/webperf/raw-file/tip/specs/NavigationTiming/Overview.html">W3C Navigation Timing</a> - <tt>window.performance.timing</tt></li>
+			<li><a href="http://yahoo.github.com/boomerang/doc/">boomerang.js</a> - zbiera dane o czasie załadowania strony przez końcowych użytkowników, wysyła zebrane dane na serwer</li>
+			<li>problem ze zmierzeniem jak lepsza wydajność przekłada się na ruch na stronie &raquo; zyski firmy / klienta.</li>
+		</ul>
+	  </article>
+
+	  <article>
+		<h3>
+			Skrzynka narzędziowa
+		</h3>
+
+		<ul class="build">
+			<li><a href="https://developers.google.com/pagespeed/">Google PageSpeed</a> - analiza wydajności stron wraz z sugestiami (wtyczka do Fx / Chrome + API)</li>
+			<li><a href="http://developer.yahoo.com/yslow/">YSlow</a> - analiza wydajności stron wraz z sugestiami + integracja z smush.it</li>
+			<li><a href="http://mir.aculo.us/dom-monster/">DOM monster</a> - analiza złożoności HTMLa, JavaScriptu (skryptozakładka)</li>
+			<li><a href="http://www.phantomjs.org/">phantom.js</a> - przeglądarka z silnikiem WebKit z interfejsem w linii komend oraz API w JS</li>
+			<li><a href="http://www.webpagetest.org/">webpagetest.org</a> - zdalne mierzenie wydajności<br>z wybranej lokacji oraz przeglądarki.</li>
+		</ul>
+
+		<img src='images/dom-monster.png' style="position:absolute;bottom:80px;right:10px">
+	  </article>
+
+	  <article>
+		<h3>
+			Lektura uzupełniająca
+		</h3>
+
+		<ul style="margin-right: 250px">
+			<li>Steve Souders, <em>High Performance Web Sites</em>, O'Reilly Media 2007</li>
+			<li>Steve Souders, <em>Even Faster Web Sites</em>, O'Reilly Media 2009</li>
+			<li><a href="http://stevesouders.com/">stevesouders.com</a></li>
+			<li><a href="http://developer.yahoo.com/performance/rules.html">35 Best Practices for Speeding Up Your Web Site</a> (YAHOO)</li>
+			<li><a href="http://code.google.com/speed/articles/">Let's make the web faster</a> (Google)</li>
+			<li><a href="http://www.perfplanet.com/">Planet Performance</a> (aggregator blogów)</li>
+		</ul>
+
+		<img src='images/even-faster-web-sites-cover.jpg' style="position:absolute;right:50px;top:15%;height:300px;border:solid 1px #666">
+	  </article>
+
+ 	  <article>
+		<blockquote>
+			<q>Performance is a feature, it must be continuously monitored and tested.</q>
+		</blockquote>
+	  </article>
+
+      <article class="fill">
+		<h1 style="margin-top: 50px; text-align: right; color: #fff">Pytania?</h1>
+
+		<p>
+		  <!-- 250x250 - http://goqr.me/ -->
+          <img src='images/qr_akai_slides.png' style="position:absolute;left:70%; top: 62%; height:25%; min-height: 250px; min-width: 250px; z-index: 20; border: solid 10px #fff">
+        </p>
+
+        <img src='images/thatsallfolks.jpg' style="left: -70px">
+
+        <div class="source">
+        	<a href="http://slides.wikia.net/akai/20120327/performance" style="color: #fff">http://slides.wikia.net/akai/20120110/javascript</a>
+        </div>
+
+      </article>
+    </section>
+
+  </body>
+</html>
